@@ -18,6 +18,7 @@ type App struct {
 	InstanceType     string
 	MacAddress       string
 	PrivateIp        string
+	UserDataFilename string
 	// If set, will return mocked credentials to the IAM instance profile instead of using STS to retrieve real credentials.
 	MockInstanceProfile   bool
 	RoleArn               string
@@ -43,12 +44,13 @@ func main() {
 func (app *App) addFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&app.AmiID, "ami-id", app.AmiID, "EC2 Instance AMI ID")
 	fs.StringVar(&app.AvailabilityZone, "availability-zone", app.AvailabilityZone, "Availability Zone")
-	fs.StringVar(&app.AppPort, "app-port", app.AppPort, "HTTP Port")
+	fs.StringVar(&app.AppPort, "app-port", "8080", "HTTP Port")
 	fs.StringVar(&app.Hostname, "hostname", app.Hostname, "EC2 Instance Hostname")
 	fs.StringVar(&app.InstanceID, "instance-id", app.InstanceID, "EC2 Instance ID")
 	fs.StringVar(&app.InstanceType, "instance-type", app.InstanceType, "EC2 Instance Type")
 	fs.StringVar(&app.MacAddress, "mac-address", app.MacAddress, "ENI MAC Address")
 	fs.StringVar(&app.PrivateIp, "private-ip", app.PrivateIp, "ENI Private IP")
+	fs.StringVar(&app.UserDataFilename, "userdata", app.UserDataFilename, "The filename contained user-data")
 	fs.BoolVar(&app.MockInstanceProfile, "mock-instance-profile", false, "Use mocked IAM Instance Profile credentials (instead of STS generated credentials)")
 	fs.StringVar(&app.RoleArn, "role-arn", app.RoleArn, "IAM Role ARN")
 	fs.StringVar(&app.RoleName, "role-name", app.RoleName, "IAM Role Name")

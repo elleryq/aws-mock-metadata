@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -90,6 +91,10 @@ func (app *App) versionSubRouter(sr *mux.Router, version string) {
 	m.Handle("/ami-launch-index/", appHandler(app.amiLaunchIndexHandler))
 	m.Handle("/ami-manifest-path", appHandler(app.amiManifestPathHandler))
 	m.Handle("/ami-manifest-path/", appHandler(app.amiManifestPathHandler))
+
+	u := sr.PathPrefix("/user-data").Subrouter()
+	u.Handle("", appHandler(app.trailingSlashRedirect))
+	u.Handle("/", appHandler(app.userDataHandler))
 
 	bdm := m.PathPrefix("/block-device-mapping").Subrouter()
 	bdm.Handle("", appHandler(app.trailingSlashRedirect))
@@ -298,6 +303,15 @@ public-ipv4
 reservation-id
 security-groups
 services/`)
+}
+
+func (app *App) userDataHandler(w http.ResponseWriter, r *http.Request) {
+	content, err := ioutil.ReadFile(app.UserDataFilename)
+	if err != nil {
+		msg := fmt.Sprintf("error reading %s", app.UserDataFilename)
+		content = []byte(msg)
+	}
+	write(w, string(content))
 }
 
 func (app *App) amiIdHandler(w http.ResponseWriter, r *http.Request) {
